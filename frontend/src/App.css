@@ -61,3 +61,13 @@ li {
   align-items: center;
   justify-content: space-between;
 }
+
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+  display: inline-block;
+  vertical-align: middle;
+}
+

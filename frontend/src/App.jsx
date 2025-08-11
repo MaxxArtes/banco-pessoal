@@ -68,17 +68,7 @@ function App() {
         {files.length === 0 && <li>Nenhum arquivo enviado ainda.</li>}
         {files.map((f) => (
           <li key={f}>
-            <span
-              title={f}
-              style={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                maxWidth: 220,
-                display: 'inline-block',
-                verticalAlign: 'middle'
-              }}
-            >
+            <span className="file-name" title={f}>
               {f}
             </span>
             <div>
