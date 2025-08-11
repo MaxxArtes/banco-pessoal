@@ -28,9 +28,13 @@ s3 = boto3.client(
 
 BUCKET = os.getenv("R2_BUCKET")
 
+@app.get("/health")
+def health():
+    return {"ok": True}
+
 @app.get("/")
 def root():
-    return {"message": "Backend funcionando 🚀"}
+    return {"message": "Backend funcionando"}
 
 
 @app.post("/upload")
