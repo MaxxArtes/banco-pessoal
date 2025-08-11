@@ -68,7 +68,7 @@ function App() {
         {files.length === 0 && <li>Nenhum arquivo enviado ainda.</li>}
         {files.map((f) => (
           <li key={f}>
-            <span className="file-name tooltip" data-tooltip={f}>
+            <span className="file-name" title={f}>
               {f}
             </span>
             <div>
