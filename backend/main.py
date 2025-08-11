@@ -57,13 +57,28 @@ def download_file(filename: str = Path(...)):
     try:
         url = s3.generate_presigned_url(
             "get_object",
-            Params={"Bucket": BUCKET, "Key": filename},
+            Params={
+                "Bucket": BUCKET,
+                "Key": filename
+            },
+            ExpiresIn=3600,
+            HttpMethod="GET"
+        )
+        # Acrescenta forçando download
+        # (forma 1) passando no Params se seu boto3 aceitar:
+        url = s3.generate_presigned_url(
+            "get_object",
+            Params={
+                "Bucket": BUCKET,
+                "Key": filename,
+                "ResponseContentDisposition": f'attachment; filename="{filename}"'
+            },
             ExpiresIn=3600
         )
         return {"url": url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
+    
 @app.delete("/delete/{filename}")
 def delete_file(filename: str = Path(...)):
     try:
