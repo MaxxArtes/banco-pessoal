@@ -31,14 +31,14 @@ function App() {
 
   const handleDownload = async (filename) => {
     try {
-      const res = await axios.get(`${API_URL}/download/${filename}`);
+      const res = await axios.get(`${API_URL}/download/${encodeURIComponent(filename)}`);
       window.open(res.data.url, '_blank');
     } catch {}
   };
 
   const handleDelete = async (filename) => {
     try {
-      await axios.delete(`${API_URL}/delete/${filename}`);
+      await axios.delete(`${API_URL}/delete/${encodeURIComponent(filename)}`);
       fetchFiles();
     } catch {}
   };
