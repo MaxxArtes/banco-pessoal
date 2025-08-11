@@ -28,6 +28,11 @@ s3 = boto3.client(
 
 BUCKET = os.getenv("R2_BUCKET")
 
+@app.get("/")
+def root():
+    return {"message": "Backend funcionando 🚀"}
+
+
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
     filename = str(uuid4()) + "_" + file.filename
