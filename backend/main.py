@@ -8,6 +8,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# ----- Validação de ambiente -----
+R2_ENDPOINT   = os.getenv("R2_ENDPOINT")
+R2_ACCESS_KEY = os.getenv("R2_ACCESS_KEY")
+R2_SECRET_KEY = os.getenv("R2_SECRET_KEY")
+BUCKET        = os.getenv("R2_BUCKET")
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+
+for var, name in [(R2_ENDPOINT,"R2_ENDPOINT"),(R2_ACCESS_KEY,"R2_ACCESS_KEY"),
+                  (R2_SECRET_KEY,"R2_SECRET_KEY"),(BUCKET,"R2_BUCKET")]:
+    if not var:
+        raise RuntimeError(f"Variável de ambiente obrigatória ausente: {name}")
+
 app = FastAPI()
 
 app.add_middleware(
