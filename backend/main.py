@@ -62,3 +62,8 @@ def delete_file(filename: str = Path(...)):
         return {"message": f"Arquivo '{filename}' deletado com sucesso."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+# Iniciar o servidor mesmo sem chamar uvicorn no terminal
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
