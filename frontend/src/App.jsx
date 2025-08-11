@@ -68,7 +68,19 @@ function App() {
         {files.length === 0 && <li>Nenhum arquivo enviado ainda.</li>}
         {files.map((f) => (
           <li key={f}>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 220, display: 'inline-block' }}>{f}</span>
+            <span
+              title={f}
+              style={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                maxWidth: 220,
+                display: 'inline-block',
+                verticalAlign: 'middle'
+              }}
+            >
+              {f}
+            </span>
             <div>
               <button onClick={() => handleDownload(f)} style={{ background: '#22c55e', marginRight: 8 }}>Baixar</button>
               <button onClick={() => handleDelete(f)} style={{ background: '#ef4444' }}>Deletar</button>
