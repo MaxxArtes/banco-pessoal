@@ -1,5 +1,4 @@
-
-from fastapi import FastAPI, UploadFile, File, HTTPException, Path
+from fastapi import FastAPI, UploadFile, File, HTTPException, Path, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import boto3
 import os
@@ -48,7 +47,6 @@ def health():
 def root():
     return {"message": "Backend funcionando"}
 
-
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
     filename = str(uuid4()) + "_" + file.filename
@@ -71,19 +69,8 @@ def download_file(filename: str = Path(...)):
             "get_object",
             Params={
                 "Bucket": BUCKET,
-                "Key": filename
-            },
-            ExpiresIn=3600,
-            HttpMethod="GET"
-        )
-        # Acrescenta forçando download
-        # (forma 1) passando no Params se seu boto3 aceitar:
-        url = s3.generate_presigned_url(
-            "get_object",
-            Params={
-                "Bucket": BUCKET,
                 "Key": filename,
-                "ResponseContentDisposition": f'attachment; filename="{filename}"'
+                "ResponseContentDisposition": f'attachment; filename=\"{filename}\"'
             },
             ExpiresIn=3600
         )
@@ -98,7 +85,35 @@ def delete_file(filename: str = Path(...)):
         return {"message": f"Arquivo '{filename}' deletado com sucesso."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+# --------- Banco de Dados (SQLAlchemy) ---------
+try:
+    from .database import SessionLocal, Base, engine
+except ImportError:
+    # fallback para execução direta: python main.py
+    from database import SessionLocal, Base, engine
+
+from sqlalchemy.orm import Session
+
+# cria tabelas se houver modelos declarativos registrados em Base
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception:
+    pass
+
+# Dependência para obter sessão de banco por request
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.get("/test-db")
+def test_db(db: Session = Depends(get_db)):
+    result = db.execute("SELECT NOW();")
+    return {"time": str(result.fetchone()[0])}
+
 # Iniciar o servidor mesmo sem chamar uvicorn no terminal
 if __name__ == "__main__":
     import uvicorn

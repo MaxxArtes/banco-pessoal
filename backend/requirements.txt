@@ -4,3 +4,6 @@ boto3
 python-dotenv
 python-multipart
 uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+boto3
