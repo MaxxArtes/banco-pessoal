@@ -21,13 +21,23 @@ for var, name in [(R2_ENDPOINT,"R2_ENDPOINT"),(R2_ACCESS_KEY,"R2_ACCESS_KEY"),
 
 app = FastAPI()
 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=[o.strip() for o in ALLOWED_ORIGINS if o.strip()],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in ALLOWED_ORIGINS if o.strip()],
+    allow_origins=[],
+    allow_origin_regex=r"^https://banco-pessoal-front\.onrender\.com$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 s3 = boto3.client(
     "s3",
@@ -36,6 +46,17 @@ s3 = boto3.client(
     aws_secret_access_key=R2_SECRET_KEY,
     region_name="auto"
 )
+# ----------------- Rotas de CORS Debug -----------------
+
+@app.get("/cors-debug")
+def cors_debug():
+    return {
+        "ALLOWED_ORIGINS_env": os.getenv("ALLOWED_ORIGINS"),
+        "ALLOWED_ORIGINS_used": [o.strip() for o in ALLOWED_ORIGINS if o.strip()],
+    }
+
+
+# ----------------- Rotas de Saúde e Raiz -----------------
 
 @app.get("/health")
 def health():
