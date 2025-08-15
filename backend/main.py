@@ -4,8 +4,6 @@ import boto3
 import os
 from uuid import uuid4
 from dotenv import load_dotenv
-from sqlalchemy import select, text
-
 
 load_dotenv()
 
@@ -23,23 +21,13 @@ for var, name in [(R2_ENDPOINT,"R2_ENDPOINT"),(R2_ACCESS_KEY,"R2_ACCESS_KEY"),
 
 app = FastAPI()
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=[o.strip() for o in ALLOWED_ORIGINS if o.strip()],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[],
-    allow_origin_regex=r"^https://banco-pessoal-front\.onrender\.com$",
+    allow_origins=[o.strip() for o in ALLOWED_ORIGINS if o.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 s3 = boto3.client(
     "s3",
@@ -48,27 +36,6 @@ s3 = boto3.client(
     aws_secret_access_key=R2_SECRET_KEY,
     region_name="auto"
 )
-# ----------------- Rotas de CORS Debug -----------------
-
-@app.get("/cors-debug")
-def cors_debug():
-    return {
-        "ALLOWED_ORIGINS_env": os.getenv("ALLOWED_ORIGINS"),
-        "ALLOWED_ORIGINS_used": [o.strip() for o in ALLOWED_ORIGINS if o.strip()],
-    }
-
-# ----------------- Rotas de Teste de Banco de Dados -----------------
-
-@app.get("/test-db")
-def test_db(db: Session = Depends(get_db)):
-    result = db.execute(text("SELECT NOW()"))
-    # qualquer uma das duas abaixo funciona:
-    # return {"time": str(result.fetchone()[0])}
-    return {"time": str(result.scalar_one())}
-
-
-
-# ----------------- Rotas de Saúde e Raiz -----------------
 
 @app.get("/health")
 def health():
@@ -119,25 +86,29 @@ def delete_file(filename: str = Path(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 # ----------------- Banco de Dados (SQLAlchemy) -----------------
+# ABSOLUTO primeiro (Render roda dentro de backend/)
 try:
-    from .database import SessionLocal, Base, engine
-except ImportError:
     from database import SessionLocal, Base, engine
+except ImportError:
+    # fallback para execução como pacote (uvicorn backend.main:app)
+    from .database import SessionLocal, Base, engine
 
 from sqlalchemy.orm import Session
-from sqlalchemy import select
-# Models & Schemas & Security
-try:
-    from . import models, schemas, security
-except ImportError:
-    import models, schemas, security
+from sqlalchemy import select, text
 
-# cria tabelas (users, etc.)
+# Models & Schemas & Security (ABSOLUTO primeiro)
+try:
+    import models, schemas, security
+except ImportError:
+    from . import models, schemas, security
+
+# cria tabelas (users, etc.) — após importar models
 try:
     Base.metadata.create_all(bind=engine)
 except Exception:
     pass
 
+# >>>>>>  get_db vem ANTES de qualquer rota que use Depends(get_db)  <<<<<<
 def get_db():
     db = SessionLocal()
     try:
@@ -145,14 +116,13 @@ def get_db():
     finally:
         db.close()
 
+# ----------------- Teste DB -----------------
 @app.get("/test-db")
 def test_db(db: Session = Depends(get_db)):
-    result = db.execute("SELECT NOW();")
-    return {"time": str(result.fetchone()[0])}
+    result = db.execute(text("SELECT NOW()"))
+    return {"time": str(result.scalar_one())}
 
 # ----------------- Auth: Cadastro & Login -----------------
-from pydantic import EmailStr
-
 @app.post("/auth/register", response_model=schemas.UserOut, status_code=201)
 def register_user(payload: schemas.UserCreate, db: Session = Depends(get_db)):
     email = payload.email.strip().lower()
