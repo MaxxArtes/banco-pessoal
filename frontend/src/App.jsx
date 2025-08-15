@@ -1,85 +1,61 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
-const API_URL = import.meta.env.VITE_API_URL;
+// Rota protegida: só abre se tiver user no localStorage
+function Protected({ children }) {
+  const user = localStorage.getItem("user");
+  if (!user) return <Navigate to="/" replace />; // volta pro login
+  return children;
+}
 
-function App() {
-  const [files, setFiles] = useState([]);
-  const [file, setFile] = useState(null);
+function Home() {
+  const navigate = useNavigate();
+  const userStr = localStorage.getItem("user");
+  const user = userStr ? JSON.parse(userStr) : null;
 
-  const fetchFiles = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/files`);
-      setFiles(res.data.arquivos || []);
-    } catch {
-      setFiles([]);
-    }
-  };
-
-  const handleUpload = async (e) => {
-    e.preventDefault();
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
-    try {
-      await axios.post(`${API_URL}/upload`, formData);
-      setFile(null);
-      fetchFiles();
-    } catch {}
-  };
-
-  const handleDownload = async (filename) => {
-    try {
-      const res = await axios.get(`${API_URL}/download/${encodeURIComponent(filename)}`);
-      window.open(res.data.url, '_blank');
-    } catch {}
-  };
-
-  const handleDelete = async (filename) => {
-    try {
-      await axios.delete(`${API_URL}/delete/${encodeURIComponent(filename)}`);
-      fetchFiles();
-    } catch {}
-  };
-
-  useEffect(() => {
-    fetchFiles();
-  }, []);
+  function logout() {
+    localStorage.removeItem("user");
+    navigate("/");
+  }
 
   return (
-    <div style={{
-      maxWidth: 600,
-      width: '100%',
-      background: '#fff',
-      borderRadius: 12,
-      boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-      padding: '2rem',
-    }}>
-      <h1>Banco Pessoal de Arquivos</h1>
-
-      <form onSubmit={handleUpload} style={{ display: 'flex', gap: 16, marginBottom: 24, alignItems: 'center' }}>
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-        <button type="submit">Enviar arquivo</button>
-      </form>
-
-      <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>Arquivos armazenados:</h2>
-      <ul>
-        {files.length === 0 && <li>Nenhum arquivo enviado ainda.</li>}
-        {files.map((f) => (
-          <li key={f}>
-            <span className="file-name" title={f}>
-              {f}
-            </span>
-            <div>
-              <button onClick={() => handleDownload(f)} style={{ background: '#22c55e', marginRight: 8 }}>Baixar</button>
-              <button onClick={() => handleDelete(f)} style={{ background: '#ef4444' }}>Deletar</button>
-            </div>
-          </li>
-        ))}
-      </ul>
+    <div style={{ padding: 24 }}>
+      <h1>Home</h1>
+      {user ? (
+        <>
+          <p>Você está logado como: {user.email}</p>
+          <button onClick={logout}>Sair</button>
+        </>
+      ) : (
+        <>
+          <p>Você não está logado.</p>
+          <Link to="/">Entrar</Link> | <Link to="/register">Cadastrar</Link>
+        </>
+      )}
     </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Login na raiz */}
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        {/* Home protegida */}
+        <Route
+          path="/home"
+          element={
+            <Protected>
+              <Home />
+            </Protected>
+          }
+        />
+        {/* fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
