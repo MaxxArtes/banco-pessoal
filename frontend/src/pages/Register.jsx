@@ -25,7 +25,7 @@ export default function Register() {
       const res = await register(email, password);
       // backend retorna { id, email }
       localStorage.setItem("user", JSON.stringify(res));
-      navigate("/home");
+      navigate("/arquivos");
     } catch (error) {
       const msg =
         error?.response?.data?.detail ||

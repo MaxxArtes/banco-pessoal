@@ -18,7 +18,7 @@ export default function Login() {
       const res = await login(email, password);
       // backend retorna { ok, message, user: {id, email} }
       localStorage.setItem("user", JSON.stringify(res.user));
-      navigate("/home");
+      navigate("/arquivos");
     } catch (error) {
       const msg =
         error?.response?.data?.detail ||
