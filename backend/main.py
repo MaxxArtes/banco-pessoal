@@ -4,6 +4,8 @@ import boto3
 import os
 from uuid import uuid4
 from dotenv import load_dotenv
+from sqlalchemy import select, text
+
 
 load_dotenv()
 
@@ -54,6 +56,16 @@ def cors_debug():
         "ALLOWED_ORIGINS_env": os.getenv("ALLOWED_ORIGINS"),
         "ALLOWED_ORIGINS_used": [o.strip() for o in ALLOWED_ORIGINS if o.strip()],
     }
+
+# ----------------- Rotas de Teste de Banco de Dados -----------------
+
+@app.get("/test-db")
+def test_db(db: Session = Depends(get_db)):
+    result = db.execute(text("SELECT NOW()"))
+    # qualquer uma das duas abaixo funciona:
+    # return {"time": str(result.fetchone()[0])}
+    return {"time": str(result.scalar_one())}
+
 
 
 # ----------------- Rotas de Saúde e Raiz -----------------
