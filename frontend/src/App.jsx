@@ -1,3 +1,8 @@
+// App principal: define rotas e proteção simples de rota
+// - '/' -> Login
+// - '/register' -> Cadastro
+// - '/arquivos' -> Página protegida que só abre se existir 'user' no localStorage
+// A proteção aqui é apenas um exemplo; para produção troque por verificação de JWT.
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";

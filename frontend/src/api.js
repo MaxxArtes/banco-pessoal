@@ -1,9 +1,12 @@
-// URL base do backend (Render/Vite) com fallback para desenvolvimento local
+// Base API URL
+// O Vite injeta variáveis que comecem com VITE_ através de import.meta.env.
+// Em desenvolvimento, crie frontend/.env com VITE_API_URL para apontar ao backend.
 const API =
   (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_URL) ||
   "http://127.0.0.1:8000";
 
 // ---- Arquivos (R2) ----
+// Funções para listar/upload/download/delete arquivos usando os endpoints
 export async function getArquivos() {
   const r = await fetch(`${API}/files`);
   if (!r.ok) throw new Error("Erro ao buscar arquivos");
@@ -12,7 +15,8 @@ export async function getArquivos() {
 
 export async function uploadArquivo(file) {
   const form = new FormData();
-  form.append("file", file); // a chave precisa ser "file" (FastAPI UploadFile)
+  // FastAPI espera o campo 'file' para UploadFile
+  form.append("file", file);
 
   const r = await fetch(`${API}/upload`, {
     method: "POST",
@@ -37,6 +41,8 @@ export async function deleteArquivo(filename) {
 }
 
 // ---- Autenticação ----
+// register/login usam os endpoints do backend. Em caso de erro, tentamos
+// extrair a mensagem do campo `detail` retornado pelo FastAPI.
 export async function register(email, password) {
   const r = await fetch(`${API}/auth/register`, {
     method: "POST",
@@ -46,7 +52,6 @@ export async function register(email, password) {
 
   // backend retorna { id, email } em caso de sucesso
   if (!r.ok) {
-    // tenta extrair mensagem do backend (detail)
     let msg = "Falha ao cadastrar";
     try {
       const data = await r.json();

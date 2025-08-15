@@ -1,21 +1,26 @@
 from pydantic import BaseModel, EmailStr, Field
 
-# Entrada de cadastro
+# Schemas (Pydantic) usados para validar entrada/saída da API
+
+# Payload esperado para criar usuário
 class UserCreate(BaseModel):
     email: EmailStr
+    # força senha mínima (validação do Pydantic)
     password: str = Field(min_length=8)
 
-# Entrada de login
+
+# Payload para login
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-# Saída segura (sem senha)
+
+# Modelo de saída de usuário (sem senha)
 class UserOut(BaseModel):
     id: int
     email: EmailStr
 
-    # Pydantic v2
+    # Habilita model parsing a partir de atributos ORM (SQLAlchemy)
     model_config = {
         "from_attributes": True
     }

@@ -1,4 +1,6 @@
 import { useState } from "react";
+// Importa funções de API (fetch para backend). O módulo `../api` resolve para
+// `src/api.js` e usa a variável VITE_API_URL quando configurada.
 import { login } from "../api"; // << minúsculo
 import { Link, useNavigate } from "react-router-dom";
 

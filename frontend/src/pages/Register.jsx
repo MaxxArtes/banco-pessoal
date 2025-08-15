@@ -1,4 +1,7 @@
 import { useState } from "react";
+// Usa `register` de src/api.js para criar usuário no backend.
+// Ao cadastrar com sucesso, salvamos o objeto retornado em localStorage
+// e redirecionamos para a página de arquivos.
 import { register } from "../api"; // << minúsculo
 import { Link, useNavigate } from "react-router-dom";
 

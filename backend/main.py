@@ -5,17 +5,31 @@ import os
 from uuid import uuid4
 from dotenv import load_dotenv
 
+# Este é o servidor FastAPI do projeto. Ele fornece endpoints para:
+# - Upload / list / download / delete de arquivos (usa um bucket S3/R2)
+# - Autenticação simples (register/login) usando SQLAlchemy + bcrypt
+# - Healthcheck e teste rápido de banco de dados
+#
+# As variáveis sensíveis são carregadas de um arquivo .env (ou do ambiente)
+# As variáveis obrigatórias para o R2 e DATABASE_URL são validadas abaixo.
 load_dotenv()
 
 # ----- Validação de ambiente R2 -----
-R2_ENDPOINT   = os.getenv("R2_ENDPOINT")
+R2_ENDPOINT = os.getenv("R2_ENDPOINT")
 R2_ACCESS_KEY = os.getenv("R2_ACCESS_KEY")
 R2_SECRET_KEY = os.getenv("R2_SECRET_KEY")
-BUCKET        = os.getenv("R2_BUCKET")
+BUCKET = os.getenv("R2_BUCKET")
+# ALLOWED_ORIGINS pode ser uma lista separada por vírgula no .env
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 
-for var, name in [(R2_ENDPOINT,"R2_ENDPOINT"),(R2_ACCESS_KEY,"R2_ACCESS_KEY"),
-                  (R2_SECRET_KEY,"R2_SECRET_KEY"),(BUCKET,"R2_BUCKET")]:
+# Verifica se as credenciais/endpoint do R2 estão presentes. Se estiverem
+# ausentes assumimos que o serviço não poderá iniciar corretamente.
+for var, name in [
+    (R2_ENDPOINT, "R2_ENDPOINT"),
+    (R2_ACCESS_KEY, "R2_ACCESS_KEY"),
+    (R2_SECRET_KEY, "R2_SECRET_KEY"),
+    (BUCKET, "R2_BUCKET"),
+]:
     if not var:
         raise RuntimeError(f"Variável de ambiente obrigatória ausente: {name}")
 
@@ -29,12 +43,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Cliente boto3 configurado para apontar ao endpoint R2 (compatível S3).
+# Usado para upload/download/list/delete de objetos no bucket configurado.
 s3 = boto3.client(
     "s3",
     endpoint_url=R2_ENDPOINT,
     aws_access_key_id=R2_ACCESS_KEY,
     aws_secret_access_key=R2_SECRET_KEY,
-    region_name="auto"
+    region_name="auto",
 )
 
 @app.get("/health")
@@ -48,30 +64,35 @@ def root():
 # ----------------- Rotas de Arquivos (R2) -----------------
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
+    # Gera um nome único prefixado com uuid para evitar colisões
     filename = str(uuid4()) + "_" + file.filename
+    # Faz o upload direto do objeto recebido para o bucket
     s3.upload_fileobj(file.file, BUCKET, filename)
     return {"filename": filename, "status": "sucesso"}
 
 @app.get("/files")
 def list_files():
     try:
-        response = s3.list_objects_v2(Bucket=BUCKET)
-        arquivos = [obj["Key"] for obj in response.get("Contents", [])]
-        return {"arquivos": arquivos}
+    # lista objetos no bucket e retorna as chaves (nomes de arquivo)
+    response = s3.list_objects_v2(Bucket=BUCKET)
+    arquivos = [obj["Key"] for obj in response.get("Contents", [])]
+    return {"arquivos": arquivos}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/download/{filename}")
 def download_file(filename: str = Path(...)):
     try:
+        # Gera uma URL temporária para download (presigned)
         url = s3.generate_presigned_url(
             "get_object",
             Params={
                 "Bucket": BUCKET,
                 "Key": filename,
-                "ResponseContentDisposition": f'attachment; filename="{filename}"'
+                # força download com nome do arquivo original
+                "ResponseContentDisposition": f'attachment; filename="{filename}"',
             },
-            ExpiresIn=3600
+            ExpiresIn=3600,
         )
         return {"url": url}
     except Exception as e:
@@ -80,8 +101,9 @@ def download_file(filename: str = Path(...)):
 @app.delete("/delete/{filename}")
 def delete_file(filename: str = Path(...)):
     try:
-        s3.delete_object(Bucket=BUCKET, Key=filename)
-        return {"message": f"Arquivo '{filename}' deletado com sucesso."}
+    # Remove o objeto do bucket
+    s3.delete_object(Bucket=BUCKET, Key=filename)
+    return {"message": f"Arquivo '{filename}' deletado com sucesso."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
