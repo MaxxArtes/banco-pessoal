@@ -1,5 +1,6 @@
 // src/pages/Arquivos.jsx
 import { useEffect, useState } from "react";
+import "./styles/Arquivos.css";
 import { getArquivos, uploadArquivo, deleteArquivo, getDownloadUrl } from "../api";
 
 export default function Arquivos() {

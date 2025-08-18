@@ -1,0 +1,29 @@
+:root {
+  /* cores base (dark) */
+  --bg: #1c1c1c;
+  --surface: #202020;
+  --text: #ffffff;
+  --muted: #c9c9c9;
+
+  /* ações */
+  --primary: #1565d8;
+  --primary-contrast: #ffffff;
+
+  /* estados */
+  --error-bg: #fee2e2;
+  --error-fg: #991b1b;
+  --shadow: 0 1px 0 rgba(0,0,0,.15);
+
+  /* componentes */
+  --input-bg: #f0f2f5;
+  --input-fg: #111111;
+
+  /* medidas */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --w-field: 260px;
+  --h-input: 38px;
+
+  /* tipografia */
+  --font: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}

@@ -4,6 +4,8 @@ import boto3
 import os
 from uuid import uuid4
 from dotenv import load_dotenv
+from sqlalchemy.orm import Session
+from sqlalchemy import select, text
 
 # Este é o servidor FastAPI do projeto. Ele fornece endpoints para:
 # - Upload / list / download / delete de arquivos (usa um bucket S3/R2)
@@ -73,10 +75,10 @@ async def upload_file(file: UploadFile = File(...)):
 @app.get("/files")
 def list_files():
     try:
-    # lista objetos no bucket e retorna as chaves (nomes de arquivo)
-    response = s3.list_objects_v2(Bucket=BUCKET)
-    arquivos = [obj["Key"] for obj in response.get("Contents", [])]
-    return {"arquivos": arquivos}
+        # lista objetos no bucket e retorna as chaves (nomes de arquivo)
+        response = s3.list_objects_v2(Bucket=BUCKET)
+        arquivos = [obj["Key"] for obj in response.get("Contents", [])]
+        return {"arquivos": arquivos}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -101,9 +103,9 @@ def download_file(filename: str = Path(...)):
 @app.delete("/delete/{filename}")
 def delete_file(filename: str = Path(...)):
     try:
-    # Remove o objeto do bucket
-    s3.delete_object(Bucket=BUCKET, Key=filename)
-    return {"message": f"Arquivo '{filename}' deletado com sucesso."}
+        # Remove o objeto do bucket
+        s3.delete_object(Bucket=BUCKET, Key=filename)
+        return {"message": f"Arquivo '{filename}' deletado com sucesso."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -114,9 +116,6 @@ try:
 except ImportError:
     # fallback para execução como pacote (uvicorn backend.main:app)
     from .database import SessionLocal, Base, engine
-
-from sqlalchemy.orm import Session
-from sqlalchemy import select, text
 
 # Models & Schemas & Security (ABSOLUTO primeiro)
 try:

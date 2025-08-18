@@ -1,0 +1,107 @@
+
+.login-logo {
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+
+body {
+  background: #e6ecdf; /* cor de fundo da página, igual ao print */
+}
+
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent; /* deixa o fundo do wrapper transparente */
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: #1c1c1c;
+  padding: 32px 24px;
+  border-radius: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+  min-width: 320px;
+  max-width: 375px;
+  width: 100%;
+}
+
+/* ====== Título ====== */
+.login-title {
+  color: #fff;
+  font-weight: 600;
+  font-size: 24px;
+  margin: 6px 0 10px;
+  text-align: center;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* ====== Inputs ====== */
+.login-input {
+  width: 260px;
+  height: 38px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  padding: 0 12px;
+  background: #f0f2f5;
+  color: #111;
+  font-size: 13px;
+}
+
+/* Campo senha com botão do olho */
+.login-password-wrap {
+  position: relative;
+  width: 260px;
+}
+
+.login-eye-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: #777;
+}
+
+/* ====== Botão ====== */
+.login-button {
+  width: 260px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  background: #fff;
+  color: #1565d8;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(0,0,0,.15);
+}
+
+/* ====== Mensagem de erro ====== */
+.login-error {
+  width: 260px;
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* ====== Texto pequeno ====== */
+.login-small {
+  color: #c9c9c9;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.login-link {
+  color: #c9c9c9;
+  text-decoration: underline;
+}
