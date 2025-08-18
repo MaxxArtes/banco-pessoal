@@ -1,24 +1,32 @@
-.files-toolbar {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin: 10px 0 16px;
+/* container principal da página de arquivos */
+.arquivos{width:100%}
+
+/* cabeçalho */
+.arquivos__header{margin-bottom:12px}
+
+/* toolbar responsiva */
+.arquivos__toolbar{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:6px 0 16px;
+}
+@media (min-width:420px){
+  .arquivos__toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 }
 
-.table {
-  width: min(720px, 100%);
-  border-collapse: collapse;
-  background: var(--surface);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow);
+/* lista de arquivos */
+.file-list{width:100%}
+.file-row{
+  display:grid;grid-template-columns:1fr;gap:10px;
+  padding:10px 0;border-bottom:1px solid #2a2a2a;
+}
+.file-row__name{font-size:14px;color:#fff;} /* <- garante visibilidade */
+.file-row__actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (min-width:420px){
+  .file-row{grid-template-columns:1fr auto;align-items:center}
+  .file-row__actions{display:flex;gap:10px}
 }
 
-.table th, .table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #2a2a2a;
-  color: var(--muted);
-}
-
-.table th { text-align: left; color: var(--text); }
-.table tr:last-child td { border-bottom: 0; }
+/* status/mensagens */
+.status{margin-top:8px;font-size:12px;color:var(--muted)}

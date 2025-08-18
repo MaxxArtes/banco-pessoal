@@ -1,67 +1,69 @@
 /* ===== cartão genérico ===== */
-.card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  background: transparent; /* mude para var(--surface) se quiser um fundo de cartão */
-  margin: auto;            /* ajuda caso não use .center-wrap */
+.card{
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  background:transparent;margin:auto;
+}
+
+/* ===== largura de página responsiva (narrow) ===== */
+.page{width:100%;max-width:360px;margin:0 auto}
+
+/* ===== títulos ===== */
+.title-hero{
+  font-weight:800;line-height:1.1;margin:0 0 16px;
+  font-size:clamp(22px,6vw,36px);
 }
 
 /* ===== inputs ===== */
-.input {
-  width: var(--w-field);
-  height: var(--h-input);
-  border-radius: var(--radius-sm);
-  border: none;
-  outline: none;
-  padding: 0 12px;
-  background: var(--input-bg);
-  color: var(--input-fg);
-  font-size: 13px;
+.input{
+  width:var(--w-field);
+  height:var(--h-input);
+  border-radius:var(--radius-sm);
+  border:none;outline:none;
+  padding:0 12px;
+  background:var(--input-bg);
+  color:var(--input-fg);
+  font-size:13px;
 }
 
 /* campo de senha com botão "olho" */
-.password-wrap {
-  position: relative;
-  width: var(--w-field);
-}
-.password-wrap .input {
-  width: 100%;
-  padding-right: 40px;
-}
-.eye-btn {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  padding: 6px;
-  cursor: pointer;
-  color: #777;
+.password-wrap{position:relative;width:var(--w-field)}
+.password-wrap .input{width:100%;padding-right:40px}
+.eye-btn{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  background:transparent;border:none;padding:6px;cursor:pointer;color:#777;
 }
 
 /* ===== botões ===== */
-.btn {
-  width: var(--w-field);
-  height: 40px;
-  border-radius: var(--radius-md);
-  border: none;
-  background: #fff;
-  color: var(--primary);
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: var(--shadow);
+.btn{
+  width:var(--w-field);height:40px;border-radius:var(--radius-md);
+  border:none;background:#fff;color:var(--primary);
+  font-weight:700;cursor:pointer;box-shadow:var(--shadow);
 }
-.btn[disabled] { opacity: .7; cursor: not-allowed; }
+.btn[disabled]{opacity:.7;cursor:not-allowed}
+.btn--sm{height:32px;font-weight:600}
+.btn--full{width:100%}
+.btn--mono{width:auto;padding:0 16px}
 
 /* ===== mensagens de erro ===== */
-.error {
-  width: var(--w-field);
-  background: var(--error-bg);
-  color: var(--error-fg);
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
+.error{
+  width:var(--w-field);
+  background:var(--error-bg);color:var(--error-fg);
+  padding:8px 10px;border-radius:var(--radius-sm);font-size:12px;
+}
+
+/* ===== utilitários de layout ===== */
+.stack-xs>*+*{margin-top:6px}
+.stack-sm>*+*{margin-top:10px}
+.stack-md>*+*{margin-top:14px}
+.stack-lg>*+*{margin-top:18px}
+.cluster{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* ===== textos ===== */
+.muted{color:var(--muted)}
+.break{overflow-wrap:anywhere;word-break:break-word}
+
+/* ===== acessibilidade ===== */
+.visually-hidden{
+  position:absolute!important;height:1px;width:1px;overflow:hidden;
+  clip:rect(1px,1px,1px,1px);white-space:nowrap;border:0;padding:0;margin:-1px;
 }

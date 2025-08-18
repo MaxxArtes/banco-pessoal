@@ -1,6 +1,5 @@
-// src/pages/Login.jsx
 import { useState, useEffect } from "react";
-import "./styles/Login.css"; // opcional, se quiser algo específico do login
+import "./styles/Login.css";
 import { login } from "../api";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -35,9 +34,8 @@ export default function Login() {
 
   return (
     <div className="center-wrap">
-      <form onSubmit={handleSubmit} className="card">
-        <img src="/logo-drive-pessoal.png" alt="Drive Pessoal" width={72} height={72} style={{ objectFit: "contain", marginBottom: 8 }} />
-
+      <form onSubmit={handleSubmit} className="card page stack-md">
+        <img src="/logo-drive-pessoal.png" alt="Drive Pessoal" className="login-logo" />
         <h1 className="title-1">Entrar na sua conta</h1>
 
         <input
@@ -77,15 +75,14 @@ export default function Login() {
         </button>
 
         <div className="small text-muted">
-          Não Possui Cadastro?{" "}
-          <Link to="/register" className="link">Clique aqui</Link>
+          Não Possui Cadastro? <Link to="/register" className="link">Clique aqui</Link>
         </div>
       </form>
     </div>
   );
 }
 
-/* Ícones (mantenha aqui ou importe de um Icons.jsx) */
+/* Ícones */
 function EyeIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden>
